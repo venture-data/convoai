@@ -46,7 +46,7 @@ function Home() {
 
       {/* Footer */}
       <div className="text-center fixed bottom-3">
-        <p className="text-gray-400 text-sm">Your AI-powered dialer</p>
+        <p className="text-gray-400 text-sm">Powered by Venture Data AI</p>
       </div>
 
       {/* Animations */}
