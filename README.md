@@ -32,7 +32,7 @@ whisper-ai/
 ├── public/
 │   ├── whisper_ai.png   # Project logo
 ├── src/
-│   ├── components/      # Reusable React components
+|   ├── assets  # Application assets like images,icons
 │   ├── screens/           # Application screens
 |       ├── aiDial.tsx
 |       ├── Home.tsx
