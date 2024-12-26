@@ -9,7 +9,7 @@ Whisper AI is an innovative Ai-based project through which you can call to custo
 ## Features
 
 - **Single Call**: You can generate AI call for one customer.
-- **Batch Call**: You can generate AI call for many customer.
+- **Batch Call**: You can generate AI call for many customers.
 
 ---
 
