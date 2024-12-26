@@ -1,8 +1,44 @@
-# React + Vite
+# Whisper AI
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+<img src="/public/whisper_ai.png" height=200 width=200/>
 
-Currently, two official plugins are available:
+Whisper AI is an innovative Ai-based project through which you can call to customers and AI will take feedback from them on your behalf. I designed the frontend.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
+
+## Features
+
+- **Single Call**: You can generate AI call for one customer.
+- **Batch Call**: You can generate AI call for many customer.
+
+---
+
+## Installation
+
+Follow these steps to set up the project locally:
+
+Clone the repository:
+
+   ```bash
+   git clone https://github.com/salman-aziz-4425/whisper-ai.git
+   cd whisper-ai
+   npm install
+   ```
+
+## File Structure
+
+```
+whisper-ai/
+├── public/
+│   ├── whisper_ai.png   # Project logo
+├── src/
+│   ├── components/      # Reusable React components
+│   ├── screens/           # Application screens
+|       ├── aiDial.tsx
+|       ├── Home.tsx
+│   ├── App.tsx          # Main App component
+│   ├── main.tsx         # Entry point
+├── .eslintrc.cjs        # ESLint configuration
+├── vite.config.js       # Vite configuration
+├── package.json         # Dependencies and scripts
+```
