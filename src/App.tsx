@@ -1,18 +1,20 @@
-import React from 'react';
-import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
+import React, { Suspense, lazy } from 'react';
+import { HashRouter as Router, Route, Routes } from 'react-router-dom';
 
-import Home from './screens/Home';
-import AIDial from './screens/AIDial';
+const Home = lazy(() => import('./screens/Home'));
+const AIDial = lazy(() => import('./screens/AIDial'));
 
 function App() {
   return (
     <Router>
-       <Routes>
-          <Route path="/" element={<Home/>} />
-          <Route path="/aidial" element={<AIDial/>} />
+      <Suspense fallback={<div>Loading...</div>}>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/aidial" element={<AIDial />} />
         </Routes>
+      </Suspense>
     </Router>
-  )
+  );
 }
 
-export default App
+export default App;

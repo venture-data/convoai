@@ -54,41 +54,99 @@ function AIDial() {
 
   const handleFileUpload = async (e: any) => {
     setIsCalling(true);
-
+    setPopupMessage("Processing your file...");
+    setShowPopup(true);
+  
     const file = e.target.files[0];
-    if (file && file.type === "text/csv") {
-      try {
-        Papa.parse(file, {
-          header: true,
-          skipEmptyLines: true,
-          complete: async (result: any) => {
-            const phoneNumbers = result.data
-              .map((row: any) => row.phone_number)
-              .filter(Boolean);
-
-            const response = await axios.post(
-              "https://call-maker-api-547752509861.asia-south1.run.app/bulk-call",
-              { phone_numbers:phoneNumbers,from_number:fromNumber },
-              { headers: { "Content-Type": "application/json" } }
-            );
-
-            window.speechSynthesis.speak(
-              new SpeechSynthesisUtterance(response?.data?.message)
-            );
-          },
-        });
-      } catch (error) {
-        console.error("Error uploading file:", error);
-        setPopupMessage("Failed to upload file. Please try again.");
-        setShowPopup(true);
-      }
-    } else {
-      setPopupMessage("Please upload a valid CSV file.");
-      setShowPopup(true);
+    const errors: string[] = [];
+  
+    if (!file) {
+      errors.push("No file selected. Please upload a file.");
+      updateErrorPopup(errors);
+      e.target.value = "";
+      return;
     }
+  
+    let phoneNumbers: string[] = [];
+    try {
+      if (file.type === "text/csv") {
+        await new Promise((resolve) => {
+          Papa.parse(file, {
+            header: true,
+            skipEmptyLines: true,
+            complete: (result: any) => {
+              console.log("Phone numbers:", result);
+              phoneNumbers = result.data
+                .map((row: any) => row.phone_number)
+                .filter(Boolean);
+              resolve(null);
+            },
+          });
+        });
+      } else if (file.type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") {
+        const data = await file.arrayBuffer();
+        const workbook = XLSX.read(data, { type: "array" });
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+        const jsonData = XLSX.utils.sheet_to_json(worksheet);
+        phoneNumbers = jsonData
+          .map((row: any) => String(row.phone_number))
+          .filter(Boolean);
+      } else {
+        errors.push("Please upload a valid CSV or XLSX file.");
+        updateErrorPopup(errors);
+        e.target.value = "";
+        return;
+      }
+  
+      phoneNumbers = phoneNumbers.map((number: string) => {
+        if (!number.startsWith("92")) {
+          return "92" + number;
+        }
+        return number;
+      });
+      
+      let filterNumbers = phoneNumbers.filter((number: string) => /^\d{12}$/.test(number));
 
+      if (!fromNumber) {
+        errors.push("Please select a Caller ID.");
+      }
+  
+      if (errors.length > 0) {
+        updateErrorPopup(errors);
+        e.target.value = "";
+        return;
+      }
+      const response = await axios.post(
+        "https://call-maker-api-547752509861.asia-south1.run.app/bulk-call",
+        { phone_numbers:filterNumbers, from_number: fromNumber },
+        { headers: { "Content-Type": "application/json" } }
+      );
+  
+      setPopupMessage("Calls successfully initiated.");
+      setTimeout(() => {
+        setShowPopup(false);
+        window.speechSynthesis.speak(
+          new SpeechSynthesisUtterance(response?.data?.message)
+        );
+      }, 0);
+    } catch (error) {
+      errors.push("Failed to upload file. Please try again.");
+      console.error("Error uploading file:", error);
+    }
+  
+    if (errors.length > 0) {
+      updateErrorPopup(errors);
+    }
+  
     setIsCalling(false);
     e.target.value = "";
+  };
+  
+  const updateErrorPopup = (errors: string[]) => {
+    setPopupMessage(errors.join("\n"));
+    setShowPopup(true);
+    setIsCalling(false);
   };
 
   return (
@@ -117,7 +175,7 @@ function AIDial() {
         <input
           id="bulkUpload"
           type="file"
-          accept=".csv"
+          accept=".csv, .xlsx"
           className="hidden"
           onChange={handleFileUpload}
         />
@@ -156,6 +214,7 @@ function AIDial() {
       </option>
       <option value="+17753177891">+1 775-317-7891</option>
       <option value="+15512967933">+1 551-296-7933</option>
+      <option value="+12185857512">+1 218-585-7512</option>
     </select>
   </div>
 </div>
