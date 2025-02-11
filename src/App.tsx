@@ -5,7 +5,7 @@ const AIDial = lazy(() => import('./screens/AIDial'));
 
 function App() {
   return (
-    <Router>
+    <Router basename='/'>
       <Suspense fallback={<div>Loading...</div>}>
         <Routes>
           <Route path="/" element={<AIDial />} />
