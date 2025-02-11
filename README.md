@@ -4,6 +4,8 @@
   <p>Intelligent Call Automation Platform</p>
 </div>
 
+<img width="1512" alt="image" src="https://github.com/user-attachments/assets/57883458-2f37-444c-bbd5-027a0b3b393b" />
+
 ## 🌐 Deployment
 
 The application is configured to be deployed as a subdirectory at `https://convoi.ai/ai-dialer`.
