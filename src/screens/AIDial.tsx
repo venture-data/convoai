@@ -14,9 +14,9 @@ function AIDial() {
   const [popupMessage, setPopupMessage] = useState("");
   const [fromNumber, setFromNumber] = useState("");
   const [language, setLanguage] = useState("en");
+  
 
   const handleCallClick = async () => {
-    setIsCalling(true);
     if (!phoneNumber) {
       setPopupMessage(
         !phoneNumber
@@ -26,22 +26,21 @@ function AIDial() {
       setShowPopup(true);
       return;
     }
-
+    setIsCalling(true);
     const utterance = new SpeechSynthesisUtterance("Calling");
     utterance.lang = "en-US";
     window.speechSynthesis.speak(utterance);
-
-    const formData = new FormData();
-    formData.append("call_to", phoneNumber);
-    formData.append("from_number", fromNumber);
     try {
       const response = await axios.post(
-        "https://call-maker-api-547752509861.asia-south1.run.app/single-call",
-        formData,
-        { headers: { "Content-Type": "multipart/form-data" } }
+        "https://bidirectional-me-547752509861.me-central1.run.app/twilio/outbound_call",
+         {
+          to: phoneNumber,
+          language: language,
+         },
+        { headers: { "Content-Type": "application/json" } }
       );
       window.speechSynthesis.speak(
-        new SpeechSynthesisUtterance(response?.data?.message)
+        new SpeechSynthesisUtterance("Call initiated successfully")
       );
     } catch (error) {
       console.error("Error:", error);
@@ -52,7 +51,6 @@ function AIDial() {
     setIsCalling(false);
     setPhoneNumber("");
   };
-
   return (
     <motion.div
       className="flex flex-col justify-between min-h-screen text-[#00A3A3] px-8 py-8 relative"
@@ -151,8 +149,8 @@ function AIDial() {
                   onChange={(e) => setLanguage(e.target.value)}
                   className="w-full bg-[#012121] text-[#00A3A3] py-3 px-4 rounded-lg border border-[#00A3A3] focus:outline-none focus:ring-2 focus:ring-[#00A3A3] appearance-none transition-all"
                 >
-                  <option value="en">English</option>
-                  <option value="ur">Urdu</option>
+                  <option value="english">English</option>
+                  <option value="urdu">Urdu</option>
                 </select>
                 <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none">⬇️</div>
               </div>
