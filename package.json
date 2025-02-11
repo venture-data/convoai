@@ -1,5 +1,5 @@
 {
-  "name": "my-project",
+  "name": "ai-dialer",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -10,7 +10,6 @@
     "preview": "vite preview",
     "deploy": "gh-pages -d dist"
   },
-  "homepage": "https://convoi.ai/ai-dialer",
   "dependencies": {
     "@typescript-eslint/parser": "^8.17.0",
     "axios": "^1.7.9",
