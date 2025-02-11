@@ -1,13 +1,10 @@
 import React, { useState } from "react";
-import * as XLSX from "xlsx";
 import whisperAi from "../assets/convoai.png";
 import { motion } from "framer-motion";
-import phoneIcon from "../assets/phone_call.jpg";
 import axios from "axios";
 import PhoneInput from 'react-phone-input-2'
 import 'react-phone-input-2/lib/style.css'
 import { FaPhoneAlt } from "react-icons/fa";
-import Papa from "papaparse";
 import convoi_bg from "../assets/office.webp";
 
 function AIDial() {
@@ -55,76 +52,6 @@ function AIDial() {
     setIsCalling(false);
     setPhoneNumber("");
   };
-  const handleFileUpload = async (e: any) => {
-    setIsCalling(true);
-    setPopupMessage("Processing your file...");
-    setShowPopup(true);
-
-    const file = e.target.files[0];
-    if (!file) {
-      setPopupMessage("No file selected. Please upload a valid file.");
-      setShowPopup(true);
-      setIsCalling(false);
-      return;
-    }
-
-    let phoneNumbers: string[] = [];
-
-    try {
-      if (file.type === "text/csv") {
-        await new Promise((resolve) => {
-          Papa.parse(file, {
-            header: true,
-            skipEmptyLines: true,
-            complete: (result: any) => {
-              phoneNumbers = result.data.map((row: any) => row.phone_number).filter(Boolean);
-              resolve(null);
-            },
-          });
-        });
-      } else if (file.type.includes("spreadsheet")) {
-        const data = await file.arrayBuffer();
-        const workbook = XLSX.read(data, { type: "array" });
-        const sheetName = workbook.SheetNames[0];
-        const worksheet = workbook.Sheets[sheetName];
-        const jsonData = XLSX.utils.sheet_to_json(worksheet);
-        phoneNumbers = jsonData.map((row: any) => String(row.phone_number)).filter(Boolean);
-      } else {
-        setPopupMessage("Invalid file format. Please upload a CSV or XLSX file.");
-        setShowPopup(true);
-        setIsCalling(false);
-        return;
-      }
-
-      // ✅ Convert numbers to correct format
-      phoneNumbers = phoneNumbers.map((num: string) => (num.startsWith("92") ? num : "92" + num));
-      const validNumbers = phoneNumbers.filter((num: string) => /^\d{12}$/.test(num));
-
-      if (!fromNumber) {
-        setPopupMessage("Please select a Caller ID.");
-        setShowPopup(true);
-        setIsCalling(false);
-        return;
-      }
-
-      const response = await axios.post(
-        "https://call-maker-api-547752509861.asia-south1.run.app/bulk-call",
-        { phone_numbers: validNumbers, from_number: fromNumber },
-        { headers: { "Content-Type": "application/json" } }
-      );
-
-      setPopupMessage("Calls successfully initiated.");
-      window.speechSynthesis.speak(new SpeechSynthesisUtterance(response?.data?.message));
-    } catch (error) {
-      console.error("Error:", error);
-      setPopupMessage("Failed to process the file. Please try again.");
-      setShowPopup(true);
-    }
-
-    setIsCalling(false);
-    e.target.value = "";
-  };
-
 
   return (
     <motion.div
@@ -167,23 +94,6 @@ function AIDial() {
           </motion.div>
         </motion.div>
       )}
-
-      <motion.header
-        className="flex justify-between items-center mb-10 relative z-10"
-        initial={{ y: -20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.8, delay: 0.3 }}
-      >
-        <div></div>
-
-        <label
-          htmlFor="bulkUpload"
-          className="bg-[#00A3A3] text-white font-semibold py-2 px-6 rounded-full text-sm shadow-lg hover:shadow-2xl transition-all transform hover:scale-105 cursor-pointer"
-        >
-          📤 Bulk Upload
-        </label>
-        <input id="bulkUpload" type="file" accept=".csv, .xlsx" className="hidden" onChange={handleFileUpload} />
-      </motion.header>
 
       <motion.main
         className="flex flex-col justify-center items-center flex-grow gap-1 -mt-16 relative z-10"
